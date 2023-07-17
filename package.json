@@ -1,0 +1,41 @@
+{
+  "name": "demo311",
+  "version": "1.0.0",
+  "description": "org311 demo including jupyter notebooks for AI plus roboflow",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "keywords": [
+    "ai",
+    "python",
+    "notebook",
+    "learn",
+    "classification"
+  ],
+  "author": "rob rowntree",
+  "license": "MIT",
+   "dependencies": {
+
+    "@aws-sdk/lib-storage": "^3.241.0",
+
+    "axios": "^1.4.0",
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+
+    "exifr": "^7.1.3",
+    "express": "^4.18.2",
+    "fs": "*",
+
+    "got": "^12.5.3",
+    "header-parser": "^1.0.0",
+
+    "mime": "^3.0.0",
+    "mongodb": "^5.6.0",
+    "nanoid": "^3.1.29",
+    "node-fetch": "^3.0.0",
+
+    "sharp": "^0.32.0"
+  }
+}
