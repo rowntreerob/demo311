@@ -94,7 +94,7 @@ app.get('/addr/:latitude/:longitude',
   	const latitude = req.params.latitude; 
   	const longitude = req.params.longitude;
   	const rsult = await got.get(
-  		`${Config.api.MAPGEOCD}?latlng=${latitude},${longitude}&key=${MAPKEY}`
+  		`${MAPGEOCD}?latlng=${latitude},${longitude}&key=${MAPKEY}`
   		).json();
   	const mapAddr = rsult.results[0].formatted_address;  // parse street.addr 
   	resp.set({'Content-Type': 'application/json'});
