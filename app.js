@@ -27,7 +27,7 @@ import sharp from 'sharp';
 import  got  from 'got';
 // import { getConf } from "./config.js";
 const  MAPKEY = process.env.GOOGLE_MAPS_API_KEY
-const  MAPGEOCD = process.env.MAPS_API_DOMAIN
+const  MAPGEOCD = process.env.MAPS_API_GEOCD
 const  ROBOFLOWKEY = process.env.ROBOFLOW_KEY
 
 const env = process.env.NODE_ENV || 'development';
@@ -72,7 +72,7 @@ app.post('/rclass/:fname',
   	const filename = req.params.fname; 
   	let buffCpy1 = Buffer.from(req.body)
   	let base64 = req.body.toString('base64') 	
-  	let res = await axios.post(`https://classify.roboflow.com/org311-clip-photos/2?api_key=${Config.api.ROBOFLOWKEY}`
+  	let res = await axios.post(`https://classify.roboflow.com/org311-clip-photos/2?api_key=${ROBOFLOWKEY}`
 	,base64 
 	, { headers: {
 	    'Content-Type': 'application/x-www-form-urlencoded'
@@ -94,7 +94,7 @@ app.get('/addr/:latitude/:longitude',
   	const latitude = req.params.latitude; 
   	const longitude = req.params.longitude;
   	const rsult = await got.get(
-  		`${Config.api.MAPGEOCD}?latlng=${latitude},${longitude}&key=${Config.api.MAPKEY}`
+  		`${Config.api.MAPGEOCD}?latlng=${latitude},${longitude}&key=${MAPKEY}`
   		).json();
   	const mapAddr = rsult.results[0].formatted_address;  // parse street.addr 
   	resp.set({'Content-Type': 'application/json'});
