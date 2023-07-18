@@ -61,7 +61,11 @@ function wrapAsync (callback) {
   }
 }
 
-    
+//routes w streams MUST be above this !! content type application/octet-stream 
+app.use(express.raw({
+	inflate: true,
+    limit: '9mb',
+    type: 'application/octet-stream'}))      
 app.use(express.static(__dirname + '/public'));
 app.use(cors({ origin: '*' }));
 
