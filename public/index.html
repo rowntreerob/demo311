@@ -1,0 +1,149 @@
+<html>
+<head>
+<style>
+
+input[type=file] {
+	width: 90px;
+	display: none;
+}
+input.butn {
+	padding: 5px 14px;
+    outline: 2px solid white;
+    outline-offset: 2px; 
+    font-size:28px;
+    margin: 20px 9px;
+    border:2px solid #ccc; 
+    -webkit-border-radius: 5px;
+    display: inline-block;
+    width: 6em;  height: 2em;
+}
+.custom-file-upload {
+	background-color: buttonface;
+	width: 6em;
+    height: 2em;
+    
+    display: inline-block;
+    padding: 20px  2px 6px 20px;
+    cursor: pointer;
+    font-size: 28px;
+    margin: 20px 9px;
+    border: 2px solid #ccc;
+    -webkit-border-radius: 5px;    
+}
+</style>
+</head>
+<body>
+<label for="files" class="custom-file-upload">
+    Choose File
+</label>
+<input type="file" id="files" name="files[]" accept="image/png, image/jpeg" title=""  />
+<br>
+<input type="button" class="butn" value="Upload" id="fakeBrowse" onclick="HandleBrowseClick();" />
+
+<input type="button" class="butn" value="Done" id="done" onclick="HandleDone();" />
+<br>
+<input type="text" id="json" name="json" accept="text" title=""  maxlength="160" size="70" />
+<h2>Photo interpreted by AI:</h2>
+  <div id="img-section" style="display: block">
+    <ul id="field-list">
+    </ul>
+    <div >
+    <img id="target" width="400px;">
+    </img>
+    </div>
+  </div>
+<script>
+document.getElementById("done").style.visibility = "hidden";
+document.getElementById("json").style.visibility = "hidden";
+let file, value;
+function HandleBrowseClick()
+ { upload(file)}
+function HandleDone()
+ { value = document.getElementById("json").value
+ sendPayload(value)
+ } 
+// const domain = 'localhost:3000'
+const domain = 'demo311-production.up.railway.app'
+const upload = (file) => {
+  let url1 = `https://${domain}/rclass/${file.name}`;
+  console.log(url1)  
+  fetch(url1, { 
+    method: 'POST',
+    headers: {       
+      "Content-Type": "application/octet-stream",
+    },
+    body: file // file object to be upload is the photo selection by "upload-button"
+  }).then(
+    response => response.json()
+  ).then(
+    data => {
+    console.log()
+  	// Get reference to ul element
+  	  let fieldList = document.querySelector('#field-list');
+	  // Loop through each key-value pair in the response object  
+		// Create new li element
+    	let listItem = document.createElement('li');   
+        // Add label and value to li       
+        listItem.textContent = "coordinates: "+ JSON.stringify(data.coordinates);  
+    	fieldList.appendChild(listItem);
+    	let listItm2 = document.createElement('li');   
+        // Add label and value to li
+        listItm2.textContent = "address: " + JSON.stringify(data.address);  
+    	fieldList.appendChild(listItm2);
+    	let listItm3 = document.createElement('li');   
+        // Add label and value to li
+        listItm3.textContent = "predictions: " + JSON.stringify(data.predictions);  
+    	fieldList.appendChild(listItm3);
+    	let listItm4 = document.createElement('li');   
+        // Add label and value to li
+        listItm4.textContent = "imgUrl: " + JSON.stringify(data.url);  
+    	fieldList.appendChild(listItm4);
+    	document.getElementById("done").style.visibility = "visible";
+  	  	document.getElementById("json").value = JSON.stringify(data);
+	}
+  ).catch(
+    error => console.log(error.message) // Handle the error 
+  );
+}
+// fetch post value content-type app/json /insertr
+const sendPayload = (value) => {
+
+	let url = "https://demo311-production.up.railway.app/insertr"
+	  fetch(url, { 
+    method: 'POST',
+    headers: {        
+      "Content-Type": "application/json",
+    },
+    body: value // file object to be upload is the photo selection by "upload-button"
+  }).then(
+    response => response.json()
+  ).then(
+    data => {
+    	document.getElementById("json").style.visibility = "visible";
+  	  	document.getElementById("json").value = JSON.stringify(data);
+    
+	}).catch(
+    error => console.log(error.message) // Handle the error 
+  );
+}	
+const readURL = file => {
+    return new Promise((res, rej) => {
+        const reader = new FileReader();
+        reader.onload = e => res(e.target.result);
+        reader.onerror = e => rej(e);
+        reader.readAsDataURL(file);
+    });
+};
+
+// Event handler executed when a file is selected
+ const onSelectFile = async evt => {
+  file = evt.target.files[0];
+  const url = await readURL(file);
+  let imshow = document.getElementById("target");
+  imshow.src = url;
+  
+  }; 
+  document.getElementById('files').addEventListener('change', onSelectFile, false);
+</script>
+</body>
+</html>
