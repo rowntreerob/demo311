@@ -6,16 +6,25 @@ input[type=file] {
 	width: 90px;
 	display: none;
 }
+input[type="text"]
+{
+    font-size:16px;
+}
 input.butn {
 	padding: 5px 14px;
     outline: 2px solid white;
     outline-offset: 2px; 
-    font-size:28px;
-    margin: 20px 9px;
+    font-size:32px;
+    margin: 28px 9px;
     border:2px solid #ccc; 
     -webkit-border-radius: 5px;
     display: inline-block;
-    width: 6em;  height: 2em;
+    width: 7em;  height: 3em;
+}
+
+.action {
+	background-color: green;
+	color: white;
 }
 .custom-file-upload {
 	background-color: buttonface;
@@ -38,11 +47,11 @@ input.butn {
 </label>
 <input type="file" id="files" name="files[]" accept="image/png, image/jpeg" title=""  />
 <br>
-<input type="button" class="butn" value="Upload" id="fakeBrowse" onclick="HandleBrowseClick();" />
+<input type="button" class="butn" value="Upload" id="upld" onclick="HandleUploadClick();" />
 
 <input type="button" class="butn" value="Done" id="done" onclick="HandleDone();" />
 <br>
-<input type="text" id="json" name="json" accept="text" title=""  maxlength="160" size="70" />
+<input type="text" id="json" name="json" accept="text" title=""  maxlength="90" size="90" />
 <h2>Photo interpreted by AI:</h2>
   <div id="img-section" style="display: block">
     <ul id="field-list">
@@ -55,8 +64,10 @@ input.butn {
 <script>
 document.getElementById("done").style.visibility = "hidden";
 document.getElementById("json").style.visibility = "hidden";
+document.getElementById("upld").style.visibility = "hidden";
+
 let file, value;
-function HandleBrowseClick()
+function HandleUploadClick()
  { upload(file)}
 function HandleDone()
  { value = document.getElementById("json").value
@@ -92,13 +103,17 @@ const upload = (file) => {
     	fieldList.appendChild(listItm2);
     	let listItm3 = document.createElement('li');   
         // Add label and value to li
-        listItm3.textContent = "predictions: " + JSON.stringify(data.predictions);  
+        listItm3.textContent = "1st prediction: " + JSON.stringify(data.predictions[0]);  
     	fieldList.appendChild(listItm3);
     	let listItm4 = document.createElement('li');   
-        // Add label and value to li
-        listItm4.textContent = "imgUrl: " + JSON.stringify(data.url);  
+        // Add label and value to li using split and take lst word 
+		let words = JSON.stringify(data.url).split("photo"); 
+		let imgPath =  "photo" + words[words.length - 1]; 
+        listItm4.textContent = "imgPath: " + imgPath;  
     	fieldList.appendChild(listItm4);
     	document.getElementById("done").style.visibility = "visible";
+    	document.getElementById("done").classList.add('action');
+    	document.getElementById("upld").classList.remove('action');
   	  	document.getElementById("json").value = JSON.stringify(data);
 	}
   ).catch(
@@ -137,11 +152,13 @@ const readURL = file => {
 
 // Event handler executed when a file is selected
  const onSelectFile = async evt => {
+  let ele = document.getElementById("upld")	
   file = evt.target.files[0];
   const url = await readURL(file);
   let imshow = document.getElementById("target");
   imshow.src = url;
-  
+  ele.classList.add('action');
+  ele.style.visibility = "visible";
   }; 
   document.getElementById('files').addEventListener('change', onSelectFile, false);
 </script>

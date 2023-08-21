@@ -104,12 +104,13 @@ app.post('/insertr',
 *    submit to DB via "done" button on UI
 */
 app.post('/rclass/:fname', 
-  wrapAsync(async(req, resp, next) => {  	
-  	const filename = req.params.fname; 
+  wrapAsync(async(req, resp, next) => {
+  // TODO splt filename on dot take 2nd word, appnd to nanoid as name  
+  	const filename =  nanoid() + '.' + req.params.fname.split('.').pop(); 
   	let buffCpy1 = req.body	
   	let res, base64, rsult, mapAddr, gps, s3data
   	let type = mime.getType(filename);
-    let _path = 'photo' + '/' + nanoid() +'_' +filename; 
+    let _path = 'photo' + '/' +filename; 
   	let options = {
 		ifd0: false,
 		exif: false,
