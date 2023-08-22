@@ -8,8 +8,29 @@ input[type=file] {
 }
 input[type="text"]
 {
-    font-size:16px;
+    font-size:26px;
 }
+
+@keyframes beat {
+  0% {
+    -webkit-transform: scale(1, 1);
+            transform: scale(1, 1);
+  }
+  100% {
+    -webkit-transform: scale(0.8,0.8);
+            transform: scale(0.8, 0.8);
+  }
+}
+
+input.butn:focus {
+  -webkit-animation: beat 1s ease-in-out backwards;
+          animation: beat 1s ease-in-out backwards;
+}
+input.butn:active {
+  -webkit-animation: none;
+          animation: none;
+}
+
 input.butn {
 	padding: 5px 14px;
     outline: 2px solid white;
@@ -20,6 +41,8 @@ input.butn {
     -webkit-border-radius: 5px;
     display: inline-block;
     width: 7em;  height: 3em;
+     -webkit-transform: scale(1, 1);
+          transform: scale(1, 1);
 }
 
 .action {
@@ -51,7 +74,7 @@ input.butn {
 
 <input type="button" class="butn" value="Done" id="done" onclick="HandleDone();" />
 <br>
-<input type="text" id="json" name="json" accept="text" title=""  maxlength="90" size="90" />
+<input type="text" id="json" name="json" accept="text" title=""  maxlength="56" size="56" />
 <h2>Photo interpreted by AI:</h2>
   <div id="img-section" style="display: block">
     <ul id="field-list">
