@@ -169,7 +169,8 @@ app.post('/rclass/:fname',
 
 app.post('/imclass/:fname',
   wrapAsync(async(req, resp, next) => {
-  	const filename = req.params.fname;   	
+  	const filename = req.params.fname;
+  	let res;   	
   	let base64 = req.body.toString('base64')  	
   	// call roboflow to classify image 		
   	if(req.body.length > 2950000) {
