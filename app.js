@@ -167,6 +167,26 @@ app.post('/rclass/:fname',
  )
 )
 
+app.post('/imclass/:fname',
+  wrapAsync(async(req, resp, next) => {
+  	const filename = req.params.fname;   	
+  	let base64 = req.body.toString('base64')  	
+  	// call roboflow to classify image 		
+  	if(req.body.length > 2950000) {
+  		let data = await sharp( req.body ).resize(800).jpeg({ mozjpeg: true }).toBuffer()
+  		res = await getClass(data.toString('base64'))
+  	} else{  	
+		res = await getClass(req.body.toString('base64'))
+	} 
+  	resp.set({'Content-Type': 'application/json'});
+  	resp.end( 
+		JSON.stringify({  	
+  			data: res.data.predictions			
+		}) 
+	);	
+	})
+)
+
 app.get('/addr/:latitude/:longitude', 
   wrapAsync(async(req, resp, next) => { 
   	const latitude = req.params.latitude; 
