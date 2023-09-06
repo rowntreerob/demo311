@@ -1,0 +1,58 @@
+<html>
+<head>
+<!-- NOTE: CREDENTIAL present, needs to be secure/firewalled to a domain -->
+<style>
+
+textarea {
+  min-width: 1000px;
+  min-height: 80px;
+  resize: vertical;
+  background-color: transparent;
+
+}
+button {
+	padding: 5px 14px;
+    outline: 2px solid white;
+    outline-offset: 2px; 
+    font-size:28px;
+    margin: 20px 9px;
+    border:2px solid #ccc; 
+    -webkit-border-radius: 5px;
+    display: block;
+    width: 6em;  height: 2em;
+}
+#map{
+    width: 100%;
+    height: 600px;
+}
+.ico_wrap {
+    height: 70px;  
+    overflow: hidden;
+    width: 100%;
+    text-align: center;
+    margin: 0px auto;
+}
+.button-container {
+  display: flex;
+}
+</style>
+</head>
+<body>
+  <textarea id="box" rows="6" cols="150" wrap="hard"></textarea>
+  <div class="button-container">
+  <button id="mapit" class="button">Map</button>
+  <button id="back" class="button">Back</button>
+</div>
+  
+  <div id="map"></div>
+  <script type="module" src="./maps.js"></script>
+  <script>
+  (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+    key: "AIzaSyASMNEKNzE0wXq-6vFa4NX5isIIKvC0lR4",
+    v: "weekly",
+    // Use the 'v' parameter to indicate the version to use (weekly, beta, alpha, etc.).
+    // Add other bootstrap parameters as needed, using camel case.
+  });
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import { MongoClient } from "mongodb";
+import { MongoClient, ObjectId } from "mongodb";
 
 const DBKEY = process.env.DB_URI || "";
 const client = new MongoClient(DBKEY);
@@ -12,4 +12,4 @@ try {
 
 let db = conn.db("org311");
 
-export default db;
+export { db, ObjectId };

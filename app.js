@@ -25,7 +25,7 @@ import headerParser from 'header-parser';
 import exifr from 'exifr';
 
 
-import db from "./db/conn.mjs";
+import {db, ObjectId } from "./db/conn.mjs";
 
 import  got  from 'got';
 // import { getConf } from "./config.js";
@@ -65,6 +65,74 @@ app.use(express.static(__dirname + '/public'));
 app.use(cors({ origin: '*' }));
 app.use(express.json({type:'application/json' })) 
 
+
+// TODO new route ./getNear/lat/long/:radius/type   get id get type use radius -> issuesList json-string 
+//      Add type to projection unless "ALL"
+
+app.get('/near/:id/:radius', 
+  wrapAsync(async(req, resp, next) => {
+  	let _id = req.params.id
+  	let _radius = Number(req.params.radius)
+  	const objectId = new ObjectId(_id);
+	let issue = await db.collection("issues").findOne({ "_id": objectId });
+	if (!issue) {
+      throw new Error('ERR DNF the id in the DB')
+    }
+	const latLng = issue.location.coordinates;
+	const result = await db.collection("issues").find({
+		"location": {
+		    "$near": {
+		        "$geometry": {
+		            "type": "Point",
+		            "coordinates": latLng
+		        },
+		        "$maxDistance": _radius
+		    }
+		}, 'predictions.0.class': { $eq: 'encampment' }
+	}).project(
+    	{"_id": 0, "location.coordinates": 1, "address": 1, "predictions[0]class": 1, "url": 1
+	}).toArray()
+	if (!result) {
+      throw new Error('ERR DNF DB issue nearby')
+    }
+    //cursor to array is native array, so add 'data' as field to hold arrays value
+    let obj = { data: result }
+  	resp.set('content-type', 'application/json');
+  	resp.json(obj);
+
+  })
+)
+//TODO  { type: { $first: "$predictions" } }
+app.get('/geofnd/:lat/:long/:radius/:type', 
+  wrapAsync(async(req, resp, next) => { 
+    let _lat = Number(req.params.lat)
+    let _long = Number(req.params.long)
+    let coordinates = [_long,_lat]
+  	let _radius = Number(req.params.radius)
+  	let _type = req.params.type
+	const result = await db.collection("issues").find({
+	"location": {
+	    "$near": {
+	        "$geometry": {
+	            "type": "Point",
+	            "coordinates": coordinates
+	        },
+	        "$maxDistance": _radius
+	    }
+	}, 'predictions.0.class': { $eq: _type }
+	}).project(
+    	{"_id": 0, "location.coordinates": 1, "address": 1, "predictions": { $slice: 1 },"url": 1
+	}).toArray()
+	if (!result) {
+      throw new Error('ERR DNF DB issue nearby')
+    }
+    //cursor to array is native array, so add 'data' as field to hold arrays value
+    let obj = { data: result }
+  	resp.set('content-type', 'application/json');
+  	resp.json(obj);
+  })
+ ) 
+
 /* insert to DB based on JSON returned by previous call on ./rclass
 * all image interpreted data to db layer 
 * {"coordinates":"address":"predictions":"url" "time"}
@@ -72,10 +140,10 @@ app.use(express.json({type:'application/json' }))
 app.post('/insertr', 
   wrapAsync(async(req, resp, next) => { 
 	
-	let coordinates = req.body.coordinates //[-122.41467, 37.75904]
-	let address = req.body.address //"2345 24th st. san franciso"
-	let predictions = req.body.predictions // [{'class': 'encampment', 'confidence': 0.456}, {'class': 'graffiti', 'confidence': 0.1869}]
-	let s3url = req.body.url // "https://media-t.s3.amazonaws.com/PXL_20230716_173824606.jpg"
+	let coordinates = req.body.coordinates
+	let address = req.body.address.replace(', USA', '')
+	let predictions = req.body.predictions
+	let s3url = req.body.url
 	let d = new Date().toISOString()
 	let issue = {"location": {
 		  "type": "Point",
@@ -85,9 +153,9 @@ app.post('/insertr',
 	  "url": s3url,
 	  "last_modified": d
 	  }
-	let collection = await db.collection("issues");
-	let result = await collection.insertOne(issue);
-  	resp.send(result).status(204);	
+	let c = await db.collection("issues");
+    issue._id = (await c.insertOne(issue)).insertedId
+  	resp.json(issue).status(204);	
   }
  )
 )

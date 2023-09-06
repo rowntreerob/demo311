@@ -97,8 +97,8 @@ function HandleDone()
  sendPayload(value)
  } 
 // const domain = 'localhost:3000'
-const domain = 'demo311-production.up.railway.app'
-const upload = (file) => {
+ const domain = 'demo311-production.up.railway.app'
+ const upload = (file) => {
   let url1 = `https://${domain}/rclass/${file.name}`;
   console.log(url1)  
   fetch(url1, { 
@@ -143,14 +143,15 @@ const upload = (file) => {
     error => console.log(error.message) // Handle the error 
   );
 }
+// data.insertedId w a button to GET '/near/:id/:radius
 // fetch post value content-type app/json /insertr
 const sendPayload = (value) => {
-
 	let url = "https://demo311-production.up.railway.app/insertr"
-	  fetch(url, { 
-    method: 'POST',
-    headers: {        
-      "Content-Type": "application/json",
+//	let url = "http://localhost:3000/insertr"
+	fetch(url, { 
+		method: 'POST',
+		headers: {        
+		  "Content-Type": "application/json",
     },
     body: value // file object to be upload is the photo selection by "upload-button"
   }).then(
@@ -159,6 +160,10 @@ const sendPayload = (value) => {
     data => {
     	document.getElementById("json").style.visibility = "visible";
   	  	document.getElementById("json").value = JSON.stringify(data);
+  	  	// GOTO pg with mapsdialg.html?lat=V&long=V  -> fetch near/lat/long/700/encampment
+  	  	let qry = `lat=${data.location.coordinates[1]}&long=${data.location.coordinates[0]}&type=${data.predictions[0].class}`
+  	  	let uri = '/mapthis.html?' + qry
+  	  	window.location.href = uri
     
 	}).catch(
     error => console.log(error.message) // Handle the error 
