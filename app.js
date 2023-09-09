@@ -260,10 +260,12 @@ app.get('/addr/:latitude/:longitude',
   wrapAsync(async(req, resp, next) => { 
   	const latitude = req.params.latitude; 
   	const longitude = req.params.longitude;
-  	const rsult = await got.get(
-  		`${MAPGEOCD}?latlng=${latitude},${longitude}&key=${MAPKEY}`
-  		).json();
-  	const mapAddr = rsult.results[0].formatted_address;  // parse street.addr 
+  	let dbstring = `${MAPGEOCD}?latlng=${latitude},${longitude}&key=${MAPKEY}`
+  	const rsult = await got.get(dbstring).json();
+  	let mapAddr = 'no results from geocode API'
+  	if(rsult.results[0].formatted_address){	
+  		mapAddr = rsult.results[0].formatted_address;
+  	}  else { console.log(dbstring)}
   	resp.set({'Content-Type': 'application/json'});
   	resp.end( 
 		JSON.stringify({	
