@@ -1,3 +1,20 @@
+# Demo311 -  no more data entry 
+New layers replace entry (AI layer + photo classification ) 
+Click on the “chooser” button, snap photo, and submit
+New issue is created on basis of the photo alone
+Pretrained model & AI classification model will:
+- Determine location/address
+- context - photo classification  
+- Auto-Selection of “type” based on AI analysis of photo
+- No need to tell the app (its graffiti, its garbage, … )
+
+[Watch video](https://youtu.be/EcNZ0R48QLE?t=108) -   prototype app built on a few lines of html featuring API  layer that:
+- Uploads photo to AWS
+- API analysis of photo 
+- Automatic organization of data
+- Automatic creation of new issue
+- Database update
+- Maps / Issues integration
 # demo311 Upload Image to the Cloud
 It could not be any easier.  
 From the phone's images ( gallery or snapped photos ) it does not require a native app ( ios or android ) in order to extract the following:
