@@ -1,7 +1,7 @@
 # Demo311 -  no more data entry 
-New layers replace entry (AI layer + photo classification ) 
-Click on the “chooser” button, snap photo, and submit
-New issue is created on basis of the photo alone
+New layers replace entry (AI layer + photo classification )   
+Click on the “chooser” button, snap photo, and submit  
+New issue is created on basis of the photo alone  
 Pretrained model & AI classification model will:
 - Determine location/address
 - context - photo classification  
