@@ -17,9 +17,9 @@ Pretrained model & AI classification model will:
 - Maps / Issues integration  
 \** Note - due to ios17 restrictions, 2 steps are needed in order to preserve metadata or GPS info in the photo as it uploads:
   IOS17 only [details on iphone](https://bugs.webkit.org/show_bug.cgi?id=207088#c26)  
-       step 1 open camera app and take the photo that will be used in #2
-       step 2 using the chooser, select photoroll , then select the photo just taken 
-       upload that photo 
+       step 1 open camera app and take the photo that will be used in #2  
+       step 2 using the chooser, select photoroll  
+       then select the photo just taken, click "done" to upload that photo 
 # demo311 Upload Image to the Cloud
 It could not be any easier.  
 From the phone's images ( gallery or snapped photos ) it does not require a native app ( ios or android ) in order to extract the following:
