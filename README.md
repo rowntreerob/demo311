@@ -1,5 +1,6 @@
 # Demo311 -  no more data entry 
-New layers replace entry (AI layer + photo classification )   
+WebApp has New layers  (AI layer + photo classification)   
+automated, new layers replace data entry   
 Click on the “chooser” button, snap photo, and submit \**   
 New issue is created on basis of the photo alone  
 Pretrained model & AI classification model will:
