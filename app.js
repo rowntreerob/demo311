@@ -205,14 +205,15 @@ app.post('/rclass/:fname',
 	//get gps from the photo w gps ( lat, long ) get street addr from geocoder api
 	gps = await exifr.parse(buffCpy1, options);  // api -> get EXIF latlng from buffer(photo)
 	if(typeof gps === "undefined") {
-		mapAddr = 'GPS not found in image'
+		
 		gps = {latitude: 0.0, longitude: 0.0}
 	}
 	else {
+	console.log('lat ', gps.latitude)
 		rsult = await got.get(
   			`${MAPGEOCD}?latlng=${gps.latitude},${gps.longitude}&key=${MAPKEY}`
   		).json();
-  		mapAddr = rsult.results[0].formatted_address;  // parse street.addr 	
+  		mapAddr = (rsult.results[0].formatted_address) ? rsult.results[0].formatted_address : mapAddr = 'GPS not found in image';  // parse street.addr 	
 	}
     // POST image to S3 store on AWS
     console.log("Upload file to:",
