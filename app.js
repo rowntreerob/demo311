@@ -173,7 +173,8 @@ app.post('/insertr',
 */
 app.post('/rclass/:fname', 
   wrapAsync(async(req, resp, next) => {
-  // TODO splt filename on dot take 2nd word, appnd to nanoid as name  
+  // TODO splt filename on dot take 2nd word, appnd to nanoid as name 
+  console.log('fnm ', req.params.fname, ' ', req.body.length) 
   	const filename =  nanoid() + '.' + req.params.fname.split('.').pop(); 
   	let buffCpy1 = req.body	
   	let res, base64, rsult, mapAddr, gps, s3data
@@ -205,7 +206,10 @@ app.post('/rclass/:fname',
 	//get gps from the photo w gps ( lat, long ) get street addr from geocoder api
 	gps = await exifr.parse(buffCpy1, options);  // api -> get EXIF latlng from buffer(photo)
 	if(typeof gps === "undefined") {
-		
+		mapAddr = 'GPS not found in image'
+		gps = {latitude: 0.0, longitude: 0.0}
+	} else if(isNaN(gps.latitude)){
+		mapAddr = 'GPS not found in image'
 		gps = {latitude: 0.0, longitude: 0.0}
 	}
 	else {
@@ -213,7 +217,7 @@ app.post('/rclass/:fname',
 		rsult = await got.get(
   			`${MAPGEOCD}?latlng=${gps.latitude},${gps.longitude}&key=${MAPKEY}`
   		).json();
-  		mapAddr = (rsult.results[0].formatted_address) ? rsult.results[0].formatted_address : mapAddr = 'GPS not found in image';  // parse street.addr 	
+  		mapAddr = (rsult.results[0].formatted_address);  // parse street.addr 	
 	}
     // POST image to S3 store on AWS
     console.log("Upload file to:",
