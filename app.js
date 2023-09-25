@@ -204,28 +204,30 @@ app.post('/rclass/:fname',
 		res = await getClass(req.body.toString('base64'))
 	}
 	//get gps from the photo w gps ( lat, long ) get street addr from geocoder api
-	gps = await exifr.parse(buffCpy1, options);  // api -> get EXIF latlng from buffer(photo)
+	gps = await exifr.gps(buffCpy1);	 
 	if(typeof gps === "undefined") {
 		console.log(gps)
 		mapAddr = 'GPS not found in image'
 		gps = {latitude: 0.0, longitude: 0.0}
+		s3data = {Location: 'no upload was done'}
 	} else if(isNaN(gps.latitude)){
-		
+		s3data = {Location: 'no upload was done'}
 		mapAddr = 'GPS not a number'
 		console.log(gps)
 		gps = {latitude: 0.0, longitude: 0.0}
 	}
 	else {
+		console.log(gps)
 		rsult = await got.get(
   			`${MAPGEOCD}?latlng=${gps.latitude},${gps.longitude}&key=${MAPKEY}`
   		).json();
-  		mapAddr = (rsult.results[0].formatted_address);  // parse street.addr 	
+  		mapAddr = (rsult.results[0].formatted_address);
+  		// POST image to S3 store on AWS
+    	console.log("Upload file to:",`s3://${params.Bucket}/${params.Key}`);
+    	const s3Upload = new Upload({ client: s3Client, params: params });
+    	s3data = await s3Upload.done();
 	}
-    // POST image to S3 store on AWS
-    console.log("Upload file to:",
-        `s3://${params.Bucket}/${params.Key}`);      
-    const s3Upload = new Upload({ client: s3Client, params: params });
-    s3data = await s3Upload.done();
+
     // build response from various calls made above
     let coordinates = [gps.longitude, gps.latitude]	
 	let predictions = [res.data.predictions[0], res.data.predictions[1]]
