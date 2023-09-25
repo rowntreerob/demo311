@@ -163,11 +163,11 @@ app.post('/insertr',
 
 /* handle a photo uploaded on http post
 * middleware has put binary file bytes -> req.body
-* make series of calls on the photo ( gps, maps str addr, 
-* - roboflow classify by img type : graffiti, garbage, encampments
+* make series of calls on the photo in r.body( gps, maps str addr, 
 * - parse EXIF data from the image
 * - build street address from result of EXIF call
 * - store photo on S3 AWS
+* - roboflow classify by img type : graffiti, garbage, encampments
 * make response to return to client so client can review and then 
 *    submit to DB via "done" button on UI
 */
@@ -195,7 +195,7 @@ app.post('/rclass/:fname',
       Metadata: { filename: filename, path: _path },
       ACL: 'public-read'
     };
-	// call roboflow to classify image 		
+	// ensure size LT 3G && that photo embeds valid EXIF / GPS 		
   	if(req.body.length > 2950000) {
   		//let myImg = await resize(req.body)
   		let data = await sharp( req.body ).resize(800).jpeg({ mozjpeg: true }).toBuffer()
@@ -206,14 +206,16 @@ app.post('/rclass/:fname',
 	//get gps from the photo w gps ( lat, long ) get street addr from geocoder api
 	gps = await exifr.parse(buffCpy1, options);  // api -> get EXIF latlng from buffer(photo)
 	if(typeof gps === "undefined") {
+		console.log(gps)
 		mapAddr = 'GPS not found in image'
 		gps = {latitude: 0.0, longitude: 0.0}
 	} else if(isNaN(gps.latitude)){
-		mapAddr = 'GPS not found in image'
+		
+		mapAddr = 'GPS not a number'
+		console.log(gps)
 		gps = {latitude: 0.0, longitude: 0.0}
 	}
 	else {
-	console.log('lat ', gps.latitude)
 		rsult = await got.get(
   			`${MAPGEOCD}?latlng=${gps.latitude},${gps.longitude}&key=${MAPKEY}`
   		).json();
