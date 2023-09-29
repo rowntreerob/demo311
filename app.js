@@ -49,7 +49,7 @@ function wrapAsync (callback) {
 }
 // TODO config domain 
 async function getClass(base64) {
-	let res = await axios.post(`https://classify.roboflow.com/org311-clip-photos/3?api_key=${ROBOFLOWKEY}`
+	let res = await axios.post(`https://classify.roboflow.com/org311-clip-photos/2?api_key=${ROBOFLOWKEY}`
 		,base64 
 		, { headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 	})
@@ -60,7 +60,7 @@ async function getClass(base64) {
 app.use(express.raw({
 	inflate: true,
     limit: '9mb',
-    type: 'image/*'}))      
+    type: 'application/octet-stream'}))      
 app.use(express.static(__dirname + '/public'));
 app.use(cors({ origin: '*' }));
 app.use(express.json({type:'application/json' })) 

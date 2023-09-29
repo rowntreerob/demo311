@@ -103,8 +103,8 @@ function HandleDone()
   console.log(url1)  
   fetch(url1, { 
     method: 'POST',
-    headers: {    
-      "Content-Type": "image/*",
+    headers: {       
+      "Content-Type": "application/octet-stream",
     },
     body: file // file object to be upload is the photo selection by "upload-button"
   }).then(
