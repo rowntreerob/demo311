@@ -16,6 +16,14 @@ Pretrained model & AI classification model will:
 - Automatic creation of new issue
 - Database update
 - Maps / Issues integration  
+
+See the [Demo](https://demo311-production.up.railway.app/) upload sample photos, see the results from "point-and-shoot" issue reporting.    
+
+Watch a [how to video](https://www.youtube.com/watch?v=1p7lWCEVPdU) a walk-thru on issue creation 
+- choose a photo
+- click "upload" and be patient while the AI does its thing
+- review categorization done by AI layer (address, issue-type)
+- click on "done" posts issue to the DB
 \** Note - due to ios17 restrictions, 2 steps are needed in order to preserve metadata or GPS info in the photo as it uploads:
   IOS17 only [details on iphone](https://bugs.webkit.org/show_bug.cgi?id=207088#c26)  
        step 1 open camera app and take the photo that will be used in #2  
