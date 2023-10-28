@@ -134,8 +134,16 @@ function HandleDone()
 		let imgPath =  "photo" + words[words.length - 1]; 
         listItm4.textContent = "imgPath: " + imgPath;  
     	fieldList.appendChild(listItm4);
-    	document.getElementById("done").style.visibility = "visible";
-    	document.getElementById("done").classList.add('action');
+
+    	// button become active if the coordinate is withing SF polygon
+    	if (data.geovalid == true) {
+    	    document.getElementById("done").style.visibility = "visible";
+    		document.getElementById("done").classList.add('action');
+    	} else {
+    	    let listItm5 = document.createElement('li');   
+        	listItm5.textContent = "within San Fran: " + JSON.stringify(data.geovalid);  
+    		fieldList.appendChild(listItm5);
+    	}
     	document.getElementById("upld").classList.remove('action');
   	  	document.getElementById("json").value = JSON.stringify(data);
 	}

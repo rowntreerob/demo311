@@ -19,16 +19,12 @@ import  fs from 'fs';
 import mime from 'mime';
 import { nanoid } from 'nanoid';
 import headerParser from 'header-parser';
-//import { verifyToken } from './libs/verifyToken.js';
-// import { decodeUrl } from './libs/decodeUrl.js';
-//import { router } from './authController.js';
 import exifr from 'exifr';
-
-
 import {db, ObjectId } from "./db/conn.mjs";
-
 import  got  from 'got';
 // import { getConf } from "./config.js";
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import * as turf  from '@turf/turf';
 const  MAPKEY = process.env.GOOGLE_MAPS_API_KEY
 const  MAPGEOCD = process.env.MAPS_API_GEOCD
 const  ROBOFLOWKEY = process.env.ROBOFLOW_KEY
@@ -36,6 +32,7 @@ const env = process.env.NODE_ENV || 'development';
 const REGION = process.env.AWS_REGION || 'us-west-1';
 const bucket = process.env.S3_BUCKET_NAME || 'media-t';
 const s3Client = new S3Client({ region: REGION });
+// outline san fran geo, used by Point_in_polygon filter 
 
 var app = express()
 // const hostWithProtocol = req.protocol + '://' + req.get('host')
@@ -54,6 +51,31 @@ async function getClass(base64) {
 		, { headers: {'Content-Type': 'application/x-www-form-urlencoded'}
 	})
 	return res
+}
+/*
+*is the point [number, number] as Longit/Latitde pair inside polygon that encircle city of SF
+*/
+function inPolygon(coordinates, polygon){
+	let sfpoly = polygon;
+	if(!polygon){
+		sfpoly = turf.polygon([
+		  [
+			[-122.518323, 37.784379],
+			[-122.478145, 37.811911],
+			[-122.402026, 37.810299],    
+			[-122.386331, 37.789093],    
+			[-122.366072, 37.719577],    
+			[-122.369851, 37.708056],
+			[-122.504355, 37.708056],
+			[-122.518323, 37.784379]
+		  ]
+		]);		
+	}
+	let point = {
+		  "type": "Point",
+		  "coordinates": coordinates
+	}   
+	return (booleanPointInPolygon(point, sfpoly));
 }
 
 //routes w streams MUST be above this !! content type application/octet-stream 
@@ -206,18 +228,16 @@ app.post('/rclass/:fname',
 	//get gps from the photo w gps ( lat, long ) get street addr from geocoder api
 	gps = await exifr.gps(buffCpy1);	 
 	if(typeof gps === "undefined") {
-		console.log(gps)
 		mapAddr = 'GPS not found in image'
 		gps = {latitude: 0.0, longitude: 0.0}
 		s3data = {Location: 'no upload was done'}
 	} else if(isNaN(gps.latitude)){
 		s3data = {Location: 'no upload was done'}
 		mapAddr = 'GPS not a number'
-		console.log(gps)
 		gps = {latitude: 0.0, longitude: 0.0}
 	}
 	else {
-		console.log(gps)
+//		console.log(gps)
 		rsult = await got.get(
   			`${MAPGEOCD}?latlng=${gps.latitude},${gps.longitude}&key=${MAPKEY}`
   		).json();
@@ -227,9 +247,9 @@ app.post('/rclass/:fname',
     	const s3Upload = new Upload({ client: s3Client, params: params });
     	s3data = await s3Upload.done();
 	}
-
     // build response from various calls made above
-    let coordinates = [gps.longitude, gps.latitude]	
+    let coordinates = [gps.longitude, gps.latitude]
+    let geovalid = inPolygon(coordinates);	
 	let predictions = [res.data.predictions[0], res.data.predictions[1]]
   	resp.set({'Content-Type': 'application/json'});
   	resp.end( 
@@ -237,7 +257,8 @@ app.post('/rclass/:fname',
   			coordinates: coordinates
    			, address: mapAddr
   			, predictions: predictions 			
-  			, url: s3data.Location			
+  			, url: s3data.Location
+  			, geovalid: geovalid 			
 		}) 
 	);		
   }
