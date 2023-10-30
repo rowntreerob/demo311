@@ -90,16 +90,16 @@ document.getElementById("json").style.visibility = "hidden";
 document.getElementById("upld").style.visibility = "hidden";
 
 let file, value;
-const domain = window.location.host;
 function HandleUploadClick()
  { upload(file)}
 function HandleDone()
  { value = document.getElementById("json").value
  sendPayload(value)
  } 
-
+// const domain = 'localhost:3000'
+ const domain = 'demo311-production.up.railway.app'
  const upload = (file) => {
-  let url1 = `//${domain}/rclass/${file.name}`;
+  let url1 = `https://${domain}/rclass/${file.name}`;
   console.log(url1)  
   fetch(url1, { 
     method: 'POST',
@@ -154,7 +154,8 @@ function HandleDone()
 // data.insertedId w a button to GET '/near/:id/:radius
 // fetch post value content-type app/json /insertr
 const sendPayload = (value) => {
-	let url = `//${domain}/insertr`
+	let url = "https://demo311-production.up.railway.app/insertr"
+//	let url = "http://localhost:3000/insertr"
 	fetch(url, { 
 		method: 'POST',
 		headers: {        
