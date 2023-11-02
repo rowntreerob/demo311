@@ -68,7 +68,7 @@ input.butn {
 <label for="files" class="custom-file-upload">
     Choose File
 </label>
-<input type="file" id="files" name="files[]" accept="image/png, image/jpeg" title=""  />
+<input type="file" id="files" name="files[]"   />
 <br>
 <input type="button" class="butn" value="Upload" id="upld" onclick="HandleUploadClick();" />
 
@@ -88,18 +88,34 @@ input.butn {
 document.getElementById("done").style.visibility = "hidden";
 document.getElementById("json").style.visibility = "hidden";
 document.getElementById("upld").style.visibility = "hidden";
-
+const domain = window.location.host
 let file, value;
 function HandleUploadClick()
  { upload(file)}
 function HandleDone()
  { value = document.getElementById("json").value
  sendPayload(value)
- } 
+ }
+ function iOS() {
+  return [
+    'iPad Simulator',
+    'iPhone Simulator',
+    'iPod Simulator',
+    'iPad',
+    'iPhone',
+    'iPod'
+  ].includes(navigator.platform)
+  // iPad on iOS 13 detection
+  || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+}
+
+if(iOS()){
+	document.getElementById("files").setAttribute("accept", "image/*");
+}
 // const domain = 'localhost:3000'
- const domain = 'demo311-production.up.railway.app'
+// const domain = 'demo311-production.up.railway.app'
  const upload = (file) => {
-  let url1 = `https://${domain}/rclass/${file.name}`;
+  let url1 = `//${domain}/rclass/${file.name}`;
   console.log(url1)  
   fetch(url1, { 
     method: 'POST',
@@ -154,7 +170,8 @@ function HandleDone()
 // data.insertedId w a button to GET '/near/:id/:radius
 // fetch post value content-type app/json /insertr
 const sendPayload = (value) => {
-	let url = "https://demo311-production.up.railway.app/insertr"
+	let url = `//${domain}/insertr`
+//	let url = "https://demo311-production.up.railway.app/insertr"
 //	let url = "http://localhost:3000/insertr"
 	fetch(url, { 
 		method: 'POST',
