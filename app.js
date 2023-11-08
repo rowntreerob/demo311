@@ -197,12 +197,12 @@ app.post('/rclass/:fname',
   wrapAsync(async(req, resp, next) => {
   // TODO splt filename on dot take 2nd word, appnd to nanoid as name 
   console.log('fnm ', req.params.fname, ' ', req.body.length) 
-  	const filename =  nanoid() + '.' + req.params.fname.split('.').pop(); 
-  	let buffCpy1 = req.body	
-  	let res, base64, rsult, mapAddr, gps, s3data
-  	let type = mime.getType(filename);
-    let _path = 'photo' + '/' +filename; 
-  	let options = {
+	const filename =  nanoid() + '.' + req.params.fname.split('.').pop(); 
+	let buffCpy1 = req.body	
+	let res, base64, rsult, mapAddr, gps, s3data
+	let type = mime.getType(filename);
+	let _path = 'photo' + '/' +filename; 
+  let options = {
 		ifd0: false,
 		exif: false,
 		gps: ['GPSLatitudeRef', 'GPSLatitude', 'GPSLongitudeRef', 'GPSLongitude'],
@@ -218,14 +218,16 @@ app.post('/rclass/:fname',
       ACL: 'public-read'
     };
 	// ensure size LT 3G && that photo embeds valid EXIF / GPS 		
-  	if(req.body.length > 2950000) {
-  		//let myImg = await resize(req.body)
-  		let data = await sharp( req.body ).resize(800).jpeg({ mozjpeg: true }).toBuffer()
-  		res = await getClass(data.toString('base64'))
-  	} else{  	
+	if(req.body.length > 2950000) {
+		//let myImg = await resize(req.body)
+		let data = await sharp( req.body ).resize(800).jpeg({ mozjpeg: true }).toBuffer()
+		res = await getClass(data.toString('base64'))
+  } else{  	
 		res = await getClass(req.body.toString('base64'))
 	}
-	//get gps from the photo w gps ( lat, long ) get street addr from geocoder api
+	//1.gps ( lat, long )from the photo. 2. get street addr from geocoder api
+	// front-end, <input type=file/> tag handled VERY differ way in ios vs android 'choosers'
+	// inadvertently, respspective browsers w bugs MAY OMIT GPS meta-data prior to upload  
 	gps = await exifr.gps(buffCpy1);	 
 	if(typeof gps === "undefined") {
 		mapAddr = 'GPS not found in image'
@@ -240,19 +242,19 @@ app.post('/rclass/:fname',
 //		console.log(gps)
 		rsult = await got.get(
   			`${MAPGEOCD}?latlng=${gps.latitude},${gps.longitude}&key=${MAPKEY}`
-  		).json();
-  		mapAddr = (rsult.results[0].formatted_address);
-  		// POST image to S3 store on AWS
-    	console.log("Upload file to:",`s3://${params.Bucket}/${params.Key}`);
-    	const s3Upload = new Upload({ client: s3Client, params: params });
-    	s3data = await s3Upload.done();
+  	).json();
+		mapAddr = (rsult.results[0].formatted_address);
+		// POST image to S3 store on AWS
+		console.log("Upload file to:",`s3://${params.Bucket}/${params.Key}`);
+		const s3Upload = new Upload({ client: s3Client, params: params });
+		s3data = await s3Upload.done();
 	}
-    // build response from various calls made above
-    let coordinates = [gps.longitude, gps.latitude]
-    let geovalid = inPolygon(coordinates);	
+  // build response from various calls made above
+  let coordinates = [gps.longitude, gps.latitude]
+  let geovalid = inPolygon(coordinates);	
 	let predictions = [res.data.predictions[0], res.data.predictions[1]]
-  	resp.set({'Content-Type': 'application/json'});
-  	resp.end( 
+  resp.set({'Content-Type': 'application/json'});
+  resp.end( 
 		JSON.stringify({
   			coordinates: coordinates
    			, address: mapAddr
