@@ -65,6 +65,12 @@ input.butn {
 </style>
 </head>
 <body>
+<!-- its simple but the input tag below may NOT be a good production idea for photo uploads due to inconsistent 
+implementation of permissions for camera&&location by ios, Android. The UX differs alot across platforms and both 
+ios and android are buggy when it comes to retention of EXIF.GPS data during either uploads from photo pickers 
+OR capturing a new photo with the camera. Better route than html in a webapp may be the "getUserMedia" API
+which is quite a bit more complicated than a one-line html tag for photo uploading. 
+-->
 <label for="files" class="custom-file-upload">
     Choose File
 </label>
@@ -105,10 +111,9 @@ function HandleDone()
     'iPhone',
     'iPod'
   ].includes(navigator.platform)
-  // iPad on iOS 13 detection
   || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
 }
-
+// android will include chooser for camera while ios defaults to file picker
 if(iOS()){
 	document.getElementById("files").setAttribute("accept", "image/*");
 }
